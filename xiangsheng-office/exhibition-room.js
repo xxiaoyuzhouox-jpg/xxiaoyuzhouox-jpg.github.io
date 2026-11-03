@@ -26,8 +26,8 @@ box(8.4,.14,6.5,0,-.06,0,carpetMat,scene,.01);
 box(.15,2.55,6.5,-4.19,1.275,0,M.wall);
 // Corridor opening: world X 17.35–18.75, retained from the supplied floor plan.
 box(.45,2.55,.035,-3.975,1.275,-3.16,M.wall);box(6.35,2.55,.035,1.025,1.275,-3.16,M.wall);box(1.6,.37,.035,-2.95,2.365,-3.16,M.wall);
-// Southern office partition retains its own doorway at world X 17.3–18.6.
-box(6.05,2.55,.025,-1.175,1.275,3.15,M.wall);box(.75,2.55,.025,3.825,1.275,3.15,M.wall);box(1.6,.37,.025,2.65,2.365,3.15,M.wall);
+// Glazed southern partition: no opaque finish over the actual glass opening.
+box(.5,2.55,.025,-3.95,1.275,3.15,M.wall);box(.3,2.55,.025,1.7,1.275,3.15,M.wall);box(5.25,.55,.025,-1.075,.275,3.15,M.wall);box(5.25,.37,.025,-1.075,2.365,3.15,M.wall);box(.75,2.55,.025,3.825,1.275,3.15,M.wall);box(1.6,.37,.025,2.65,2.365,3.15,M.wall);
 
 box(.15,.64,6.5,4.27,.26,0,M.wall);box(.15,.28,6.5,4.27,2.46,0,M.wall);
 for(const x of[-4.17,4.17])box(.055,.075,6.5,x,.037,0,M.dark);
