@@ -30,13 +30,15 @@ box(.45,2.55,.035,-3.975,1.275,-3.16,M.wall);box(6.35,2.55,.035,1.025,1.275,-3.1
 box(.5,2.55,.025,-3.95,1.275,3.15,M.wall);box(.3,2.55,.025,1.7,1.275,3.15,M.wall);box(5.25,.55,.025,-1.075,.275,3.15,M.wall);box(5.25,.37,.025,-1.075,2.365,3.15,M.wall);box(.75,2.55,.025,3.825,1.275,3.15,M.wall);box(1.6,.37,.025,2.65,2.365,3.15,M.wall);
 
 box(.15,.64,6.5,4.27,.26,0,M.wall);box(.15,.28,6.5,4.27,2.46,0,M.wall);
-for(const x of[-4.17,4.17])box(.055,.075,6.5,x,.037,0,M.dark);
+// Skirting is supplied once by the office shell, outside the finished wall faces.
 // Window frames, fine blinds and an illustrated distant skyline.
 const skyline=canvasTexture(2048,768,(c,w,h)=>{const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#9caebe');sky.addColorStop(.65,'#e5d5c9');sky.addColorStop(1,'#cbd2d3');c.fillStyle=sky;c.fillRect(0,0,w,h);for(let layer=0;layer<3;layer++)for(let i=0;i<30;i++){const bw=30+(i*17%60),bh=50+(i*49%180)+(layer===2?70:0),x=i*80-20+(layer*37),y=h-bh-20;c.fillStyle=['#b4bdc4','#a5b2bc','#929fa9'][layer];c.fillRect(x,y,bw,bh);if(layer===2){for(let yy=y+12;yy<h-20;yy+=13)for(let xx=x+6;xx<x+bw-5;xx+=10){c.fillStyle=(xx+yy)%4?'#bfc7ca':'#e8d4b2';c.fillRect(xx,yy,4,6);}}}c.fillStyle='#bac5c6';c.fillRect(0,h-22,w,22);});
 const skyMat=new T.MeshBasicMaterial({map:skyline,side:T.DoubleSide});
 plane(6.5,2.4,4.42,1.35,0,skyMat,-Math.PI/2);
 // Two distinct east windows, separated by the measured wall pier.
 for(const window of[{z:-1.305,width:3.89},{z:2.365,width:1.77}]){const g=new T.Group();g.position.set(4.19,0,window.z);g.rotation.y=-Math.PI/2;scene.add(g);const w=window.width;box(w,.055,.11,0,.59,0,M.frame,g);box(w,.04,.11,0,2.30,0,M.frame,g);box(w+.03,.04,.32,0,.55,.06,M.front,g);for(const x of[-w/2,0,w/2])box(.04,1.76,.10,x,1.45,0,M.frame,g);plane(w,1.65,0,1.45,-.02,M.glass,0,g);for(let k=0;k<20;k++)box(w,.013,.035,0,2.27-k*.034,.055,material(k%2?'#373932':'#4c4d44'),g,.001,false);}
+// Window-sill skirting has one exposed face, 18 mm proud of the finished sill.
+M.dark.name='exhibition-trim';for(const w of[{z:-1.305,width:3.89},{z:2.365,width:1.77}]){const strip=box(.018,.10,w.width,4.186,.055,w.z,M.dark);strip.castShadow=false;}
 // Structural wall piers: west 1.05 m long; east 0.84 m long.
 box(.42,2.55,1.05,-3.99,1.275,1.095,M.wall);box(.30,2.55,.84,4.05,1.275,1.06,M.wall);obstacles.push({type:'box',x1:-4.2,x2:-3.78,z1:.57,z2:1.62},{type:'box',x1:3.9,x2:4.2,z1:.64,z2:1.48});
 // Ceiling: recessed dark backing, slats, lighting channels and warm downlights.
@@ -54,15 +56,22 @@ function floorShadow(x,z,w,d,opacity=.8){const p=plane(w,d,x,.012,z,shadowMat.cl
 const warmTexture=canvasTexture(128,128,(c,w,h)=>{const gr=c.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);gr.addColorStop(0,'rgba(255,224,162,.6)');gr.addColorStop(.6,'rgba(255,209,139,.2)');gr.addColorStop(1,'rgba(255,209,139,0)');c.fillStyle=gr;c.fillRect(0,0,w,h);});
 const warmMat=new T.MeshBasicMaterial({map:warmTexture,transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false});
 function poolGlow(x,z,w,d,opacity=.3){const p=plane(w,d,x,.014,z,warmMat.clone());p.rotation.x=-Math.PI/2;p.material.opacity=opacity;p.renderOrder=2;return p;}
-// Six fitted cabinets, each with three illuminated display shelves.
-const cabLeft=SPACE_CONFIG.exhibition.cabinet.left,cabWidth=SPACE_CONFIG.exhibition.cabinet.width,bay=cabWidth/6,cabZ=SPACE_CONFIG.exhibition.cabinet.z,shelves=[.58,.99,1.40],wallProducts=[];
-box(cabWidth+.06,.12,.48,cabLeft+cabWidth/2,.07,cabZ,M.dark);box(cabWidth,.44,.51,cabLeft+cabWidth/2,.34,cabZ,M.front);
-box(cabWidth+.10,.045,.58,cabLeft+cabWidth/2,.575,cabZ,M.ivory);box(cabWidth+.02,.045,.54,cabLeft+cabWidth/2,1.846,cabZ,M.frame);box(cabWidth,.018,.035,cabLeft+cabWidth/2,.105,cabZ+.23,M.goldGlow);
-floorShadow(cabLeft+cabWidth/2,-2.67,7.7,.75,.5);poolGlow(cabLeft+cabWidth/2,-2.53,7.6,.45,.15);
-for(let i=0;i<6;i++){const cx=cabLeft+bay*(i+.5);for(let j=0;j<2;j++){box(bay/2-.015,.39,.035,cx+(j?1:-1)*bay/4,.34,cabZ+.272,M.front);box(.09,.009,.012,cx+(j?1:-1)*bay/4,.505,cabZ+.296,M.metal);}box(.042,1.26,.54,cabLeft+bay*i,.1+1.15,cabZ,M.frame);for(let row=0;row<3;row++){const y=shelves[row];plane(bay-.055,.385,cx,y+.215,cabZ-.247,recessMat);box(bay-.035,.028,.51,cx,y,cabZ,M.ivory);box(bay-.10,.008,.012,cx,y+.393,cabZ+.16,M.glow);box(bay-.06,.016,.027,cx,y+.392,cabZ+.18,M.frame);}}
-box(.042,1.26,.54,cabLeft+cabWidth,1.25,cabZ,M.frame);
+// Five identical four-tier cabinets, 1.20 × 2.20 × 0.30 m each.
+const cabinet=SPACE_CONFIG.exhibition.cabinet,cabLeft=cabinet.left,cabWidth=cabinet.width,bay=cabWidth/cabinet.count,cabZ=cabinet.z,shelves=[.58,.98,1.38,1.78],wallProducts=[];
+for(let i=0;i<cabinet.count;i++){
+ const g=new T.Group();g.name='展厅四层柜 '+(i+1);g.position.set(cabLeft+bay*(i+.5),0,cabZ);scene.add(g);
+ box(bay,.10,cabinet.depth,0,.05,0,M.dark,g);box(bay,.45,.276,0,.325,0,M.front,g);
+ box(bay,.03,cabinet.depth,0,.565,0,M.ivory,g);box(bay,.04,cabinet.depth,0,2.18,0,M.frame,g);
+ for(const x of[-bay/2+.015,bay/2-.015])box(.03,1.60,cabinet.depth,x,1.38,0,M.frame,g);
+ box(bay-.06,1.60,.015,0,1.38,-.1425,M.front,g);
+ for(const x of[-bay/4,bay/4]){box(bay/2-.018,.395,.018,x,.335,.141,M.front,g);box(.085,.009,.012,x,.505,.156,M.metal,g);}
+ box(bay-.06,.012,.018,0,.105,.143,M.goldGlow,g);
+ for(const y of shelves){plane(bay-.065,.365,0,y+.198,-.134,recessMat,0,g);box(bay-.06,.025,cabinet.depth,0,y,0,M.ivory,g);box(bay-.10,.008,.012,0,y+.371,.105,M.glow,g);box(bay-.06,.012,.02,0,y+.384,.118,M.frame,g);}
+ g.traverse(o=>{if(o.isMesh)occluders.push(o);});
+}
+floorShadow(cabLeft+cabWidth/2,cabZ+.13,cabWidth+.10,.40,.45);poolGlow(cabLeft+cabWidth/2,cabZ+.17,cabWidth,.28,.12);
 // Track spotlights paint warm pools above the cabinets; their heads have real depth.
-box(7.15,.025,.04,.44,2.33,-2.73,M.metal,ceilings);for(let i=0;i<6;i++){const x=cabLeft+bay*(i+.5);cylinder(.018,.08,x,2.27,-2.73,M.metal,ceilings);const head=cylinder(.042,.12,x,2.18,-2.70,M.ivory,ceilings);head.rotation.x=.45;const lens=cylinder(.033,.004,x,2.125,-2.67,M.glow,ceilings);lens.rotation.x=.45;const light=new T.SpotLight(0xffe6bd,4.2,4,.62,.85,2);light.position.set(x,2.16,-2.65);light.target.position.set(x,1.65,-3.23);scene.add(light,light.target);interiorLights.push(light);}
+box(cabWidth+.25,.025,.04,cabLeft+cabWidth/2,2.33,-2.73,M.metal,ceilings);for(let i=0;i<cabinet.count;i++){const x=cabLeft+bay*(i+.5);cylinder(.018,.08,x,2.27,-2.73,M.metal,ceilings);const head=cylinder(.042,.12,x,2.18,-2.70,M.ivory,ceilings);head.rotation.x=.45;const lens=cylinder(.033,.004,x,2.125,-2.67,M.glow,ceilings);lens.rotation.x=.45;const light=new T.SpotLight(0xffe6bd,4.2,4,.62,.85,2);light.position.set(x,2.16,-2.65);light.target.position.set(x,1.65,-3.23);scene.add(light,light.target);interiorLights.push(light);}
 for(const x of[-2.2,.4,2.8]){const l=new T.PointLight(0xffefcf,1.8,5.5,2);l.position.set(x,1.65,-2.35);scene.add(l);interiorLights.push(l);}const roomFill=new T.PointLight(0xffedd4,10,10,2);roomFill.position.set(0,2.28,.5);scene.add(roomFill);interiorLights.push(roomFill);
 // Rounded, two-tier islands leave a continuous central aisle.
 const islandZ=SPACE_CONFIG.exhibition.islands.z,islandScale=SPACE_CONFIG.exhibition.islands.scale;
@@ -81,18 +90,21 @@ function makeProduct(index){const p=data[index],g=new T.Group();g.userData.produ
  g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;o.userData.product=index;}});return g;}
 for(let i=0;i<data.length;i++)templates.push(makeProduct(i));
 function placeProduct(index,x,y,z,scale=1,rot=0){const group=templates[index].clone(true);group.position.set(x,y,z);group.rotation.y=rot;group.scale.setScalar(scale);scene.add(group);const id=instances.length;group.userData.instance=id;group.traverse(o=>{if(o.isMesh){o.userData.instance=id;selectable.push(o);}});instances.push(group);return group;}
-const arrangements=[[0,4,0,1,5],[4,0,3,0,1],[0,4,2,5,0],[3,0,4,1,5],[0,2,0,4,3],[1,0,5,2,4]];
-for(let i=0;i<6;i++)for(let row=0;row<3;row++)for(let j=0;j<SPACE_CONFIG.exhibition.cabinet.itemsPerShelf;j++){const index=arrangements[i][(j+row)%5];const x=cabLeft+bay*i+.15+j*(bay-.30)/(SPACE_CONFIG.exhibition.cabinet.itemsPerShelf-1),y=shelves[row]+.016,z=cabZ+.06;const scale=data[index].kind==='jug'?.94:1.02+((i+j)%3)*.03;const g=placeProduct(index,x,y,z,scale,(j%2?1:-1)*.035);wallProducts.push(g);}
+const arrangements=[[4,0,1,3],[0,2,4,1],[3,0,5,4],[0,4,1,2]];
+for(let i=0;i<cabinet.count;i++)for(let row=0;row<cabinet.layers;row++)for(let j=0;j<cabinet.itemsPerShelf;j++){
+ const index=arrangements[row][j%4],x=cabLeft+bay*i+.17+j*(bay-.34)/(cabinet.itemsPerShelf-1),y=shelves[row]+.014,z=cabZ+.035;
+ const scale=data[index].kind==='jug'?.94:1.02+(j%3)*.03,g=placeProduct(index,x,y,z,scale,(j%2?1:-1)*.035);g.userData.cabinet=i;g.userData.shelf=row;wallProducts.push(g);
+}
 for(const x of SPACE_CONFIG.exhibition.islands.x){for(let j=0;j<4;j++){const a=Math.PI*.12+j*Math.PI*.25,index=(j+(x>1?2:0))%6;placeProduct(index,x+Math.cos(a)*.79*islandScale,.375,islandZ+Math.sin(a)*.79*islandScale,1.0,Math.cos(a)*.15);}for(let j=0;j<3;j++){const a=j/3*Math.PI*2,index=(j+(x>1?3:0))%6;placeProduct(index,x+Math.sin(a)*.40*islandScale,.598,islandZ+Math.cos(a)*.40*islandScale,1.02,Math.sin(a)*.2);}}
 // The floor has subtle contact shadows beneath the island products.
-obstacles.push({type:'box',x1:cabLeft-.05,x2:cabLeft+cabWidth+.05,z1:-3.25,z2:cabZ+.32});
+obstacles.push({type:'box',x1:cabLeft-.05,x2:cabLeft+cabWidth+.05,z1:cabZ-cabinet.depth/2,z2:cabZ+cabinet.depth/2});
 // Merge static display geometry by material, retaining original meshes as picking proxies.
 scene.updateMatrixWorld(true);
 const batches=new Map(),tempMatrix=new T.Matrix4();
-function addBatch(mesh,matrix,parent=scene){const geo=mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone();geo.applyMatrix4(matrix);const key=mesh.material.uuid+(parent===ceilings?'ceiling':'');if(!batches.has(key))batches.set(key,{material:mesh.material,geometries:[],parent});batches.get(key).geometries.push(geo);}
+function addBatch(mesh,matrix,parent=scene){const geo=mesh.geometry.index?mesh.geometry.toNonIndexed():mesh.geometry.clone();geo.applyMatrix4(matrix);const key=mesh.material.uuid+(parent===ceilings?'ceiling':'')+'/'+mesh.castShadow+'/'+mesh.receiveShadow;if(!batches.has(key))batches.set(key,{material:mesh.material,geometries:[],parent,castShadow:mesh.castShadow,receiveShadow:mesh.receiveShadow});batches.get(key).geometries.push(geo);}
 for(const child of [...scene.children]){if(instances.includes(child))continue;child.traverse(mesh=>{if(mesh.isMesh&&!mesh.isInstancedMesh&&!mesh.material.transparent){addBatch(mesh,mesh.matrixWorld,child===ceilings?ceilings:scene);mesh.visible=false;}});}
 for(const group of instances){group.traverse(mesh=>{if(!mesh.isMesh)return;if(mesh.isInstancedMesh){const im=new T.Matrix4();for(let i=0;i<mesh.count;i++){mesh.getMatrixAt(i,im);tempMatrix.multiplyMatrices(mesh.matrixWorld,im);addBatch(mesh,tempMatrix);}}else addBatch(mesh,mesh.matrixWorld);});group.visible=false;}
-for(const batch of batches.values()){const merged=mergeGeometries(batch.geometries,false);if(!merged)throw Error('Display geometry batch failed');const mesh=new T.Mesh(merged,batch.material);mesh.castShadow=true;mesh.receiveShadow=true;batch.parent.add(mesh);batch.geometries.forEach(g=>g.dispose());}
+for(const batch of batches.values()){const merged=mergeGeometries(batch.geometries,false);if(!merged)throw Error('Display geometry batch failed');const mesh=new T.Mesh(merged,batch.material);mesh.castShadow=batch.castShadow;mesh.receiveShadow=batch.receiveShadow;batch.parent.add(mesh);batch.geometries.forEach(g=>g.dispose());}
 
 const offset=SPACE_CONFIG.exhibition.origin;scene.position.set(...offset);scene.name='升级展厅';scene.updateMatrixWorld(true);
 return {root:scene,ceilings,interactive:selectable,instances,templates,data,occluders,carpetMat,obstacles:obstacles.map(b=>b.type==='circle'?{...b,x:b.x+offset[0],z:b.z+offset[2]}:{...b,x1:b.x1+offset[0],x2:b.x2+offset[0],z1:b.z1+offset[2],z2:b.z2+offset[2]})};

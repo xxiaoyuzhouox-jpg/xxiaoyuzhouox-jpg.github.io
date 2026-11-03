@@ -1,7 +1,7 @@
 // 灯光、展厅局部陈列和产品资料配置。长度单位：米。修改后刷新页面。房间边界和门窗沿用 app.js 中的原平面图。
 export const SPACE_CONFIG={
  lighting:{exposure:1.10,environment:.48,hemisphere:1.05,ambient:.18,sun:2.0},
- exhibition:{origin:[20.8,0,15.19],cabinet:{left:-1.96,width:5.98,itemsPerShelf:4,z:-2.84},islands:{x:[0,2.4],z:-1.34,scale:.52}},
+ exhibition:{origin:[20.8,0,15.19],cabinet:{left:-1.96,width:6,count:5,height:2.2,depth:.3,layers:4,itemsPerShelf:4,z:-2.98},islands:{x:[0,2.4],z:-1.34,scale:.52}},
  conference:{x:19.7,z:16.28,length:4.2,depth:1.2,height:.77},
  products:[
  {name:'青禾 · 生长原液',en:'GROWTH ESSENCE',series:'01 / 植物营养系列',kind:'bottle',color:'#efeee5',cap:'#eff0e7',ink:'#3a653c',accent:'#93aa54',size:'500 mL',no:'XS-001',subtitle:'清透的绿色语言，承载生长的想象。',intro:'青禾是为本展厅设计的植物营养概念系列。米白瓶身搭配深绿标签，以叶片与田野图形传递自然、简洁的视觉印象。',detail:'这里展示的是包装与陈列设计示例。正式版本可以替换为产品配方、使用说明、检测资料和品牌故事。',tags:['米白瓶身','植物图形','营养概念']},
