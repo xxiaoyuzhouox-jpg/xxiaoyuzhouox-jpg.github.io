@@ -1,3 +1,4 @@
+import {loadOptionalTexture} from './startup-assets.js';
 import * as T from './vendor/three.module.js';
 import {RoundedBoxGeometry} from './vendor/geometries/RoundedBoxGeometry.js';
 import {mergeGeometries} from './vendor/addons/utils/BufferGeometryUtils.js';
@@ -17,7 +18,7 @@ function canvasTexture(w,h,paint){const c=document.createElement('canvas');c.wid
 function plane(w,h,x,y,z,mat,rotation=0,parent=scene){const mesh=new T.Mesh(new T.PlaneGeometry(w,h),mat);mesh.position.set(x,y,z);mesh.rotation.y=rotation;parent.add(mesh);return mesh;}
 function words(text,w,h,x,y,z,opts={}){const tex=canvasTexture(1024,Math.round(1024*h/w),(c,cw,ch)=>{c.fillStyle=opts.bg||'#c9c7bf';c.fillRect(0,0,cw,ch);c.fillStyle=opts.color||'#565d4c';c.font=`500 ${opts.size||70}px "Microsoft YaHei",sans-serif`;c.textAlign='center';c.textBaseline='middle';const lines=text.split('\n');lines.forEach((l,i)=>c.fillText(l,cw/2,ch/2+(i-(lines.length-1)/2)*(opts.size||70)*1.4,cw-50));});return plane(w,h,x,y,z,new T.MeshBasicMaterial({map:tex}),opts.rotation||0,opts.parent||scene);}
 const loader=new T.TextureLoader();
-async function loadTexture(url,color=false,repeat=1){try{const tex=await loader.loadAsync(url);tex.colorSpace=color?T.SRGBColorSpace:T.NoColorSpace;tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(repeat,repeat);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return tex;}catch{notify('部分材质未加载，已使用基础材质。');return null;}}
+async function loadTexture(url,color=false,repeat=1){try{const tex=await loadOptionalTexture(loader,url);if(!tex)return null;tex.colorSpace=color?T.SRGBColorSpace:T.NoColorSpace;tex.wrapS=tex.wrapT=T.RepeatWrapping;tex.repeat.set(repeat,repeat);tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return tex;}catch{notify('部分材质未加载，已使用基础材质。');return null;}}
 const [carpetColor,carpetNormal,carpetRough]=await Promise.all([loadTexture('./assets/carpet-color.jpg',true,5),loadTexture('./assets/carpet-normal.jpg',false,5),loadTexture('./assets/carpet-rough.jpg',false,5)]);
 const carpetMat=material('#cecbc4',.98);carpetMat.map=carpetColor;carpetMat.normalMap=carpetNormal;carpetMat.normalScale=new T.Vector2(.35,.35);carpetMat.roughnessMap=carpetRough;
 carpetMat.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\nfloat gray=dot(diffuseColor.rgb,vec3(.2126,.7152,.0722));diffuseColor.rgb=vec3(gray*.8+.12);');};

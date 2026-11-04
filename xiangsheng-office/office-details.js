@@ -1,3 +1,4 @@
+import {loadOptionalTexture} from './startup-assets.js';
 // Measured additions to the office. Metres; north = -Z, east = +X.
 export async function buildOfficeDetails({THREE:T,scene,box,cylinder,textPlane,texCanvas,M,colliders,plant,renderer}){
  const material=(color,roughness=.5,metalness=0)=>new T.MeshStandardMaterial({color,roughness,metalness});
@@ -73,7 +74,7 @@ export async function buildOfficeDetails({THREE:T,scene,box,cylinder,textPlane,t
  // Partner wall: source logos from the supplied reference, arranged on actual relief tiles.
  const brand=new T.Group();brand.name='象昇品牌墙 4.2×1.8m';brand.position.set(11.05,0,11.82);brand.rotation.y=Math.PI;scene.add(brand);
  box(5,2.5,.035,0,1.25,0,material('#aaa08d',.75),brand);box(4.22,1.82,.025,0,1.35,.03,black,brand);
- const atlas=await new T.TextureLoader().loadAsync('./assets/brand-wall.jpg');atlas.colorSpace=T.SRGBColorSpace;atlas.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+ const atlas=await loadOptionalTexture(new T.TextureLoader(),'./assets/brand-wall.jpg');if(atlas){atlas.colorSpace=T.SRGBColorSpace;atlas.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());}
  const logoMaterial=new T.MeshStandardMaterial({map:atlas,roughness:.53});
  for(let row=0;row<6;row++)for(let col=0;col<14;col++){if((row===2||row===3)&&(col===6||col===7))continue;const x=-2.1+(col+.5)*.3,y=2.25-(row+.5)*.3,depth=.045+((col*7+row*3)%4)*.007;box(.296,.296,depth,x,y,.05+depth/2,cream,brand);const face=plane(.292,.292,x,y,.052+depth,logoMaterial,brand),uv=face.geometry.attributes.uv;for(let i=0;i<uv.count;i++){const u=uv.getX(i),v=uv.getY(i);uv.setXY(i,(col+.02+u*.96)/14,1-(row+.98-v*.96)/6);}uv.needsUpdate=true;}
  box(.596,.596,.085,0,1.35,.105,material('#df0017',.4),brand);textPlane('象昇\n品牌',.57,.57,0,1.35,.149,{bg:'#df0017',color:'#fff8ed',size:270,parent:brand});
